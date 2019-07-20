@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+
+<head xmlns:padding-top="http://www.w3.org/1999/xhtml">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Super Smash OOOs - Pay-Per-View</title>
+
+  <!--
+	//////////////////////////////////////////////////////
+
+	FREE HTML5 TEMPLATE
+	DESIGNED & DEVELOPED by FREEHTML5.CO
+
+	Website: 		http://freehtml5.co/
+	Email: 			info@freehtml5.co
+	Twitter: 		http://twitter.com/fh5co
+	Facebook: 		https://www.facebook.com/fh5co
+
+	//////////////////////////////////////////////////////
+	 -->
+
+  	<!-- Facebook and Twitter integration -->
+
+	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+	<link rel="shortcut icon" href="favicon.ico">
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700,900' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab:300,400,700" rel="stylesheet">
+
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/card-js.min.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/card-js.min.css">
+
+        <script>
+            setTimeout(
+                function() {
+                  $('#message_panel').slideUp();
+                }, 5000);
+        </script>
+	</head>
+	<body>
+
+		<header id="fh5co-header" role="banner">
+			<div class="container text-center" style="z-index: 1;">
+                <div id="message_panel" ></div>
+                <div id="fh5co-logo" >
+					<a href="index.html" ><img src="images/logo.png" width="800" ></a>
+				</div>
+
+			</div>
+			<nav>
+				<ul>
+					<li><b>SSOOO's Heros</b></li>
+					<li><img src="images/img_1.jpg" height="130px" width="200px"></li>
+					<li><img src="images/img_2.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_3.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_4.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_5.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_6.jpg" height="130px" width="200px" ></li>
+				</ul>
+			</nav>
+		</header>
+		<!-- END #fh5co-header -->
+		<br>
+		<div id="payment">
+			<h1>Pay-Per-View Live Stream Purchase</h1>
+			<h2>Enter payment information</h2>
+			<form action="/cc" method="GET">
+				<span class="error" aria-live="polite" ></span>
+				<div class="card-js" >
+				  <input class="card-number my-custom-class" id="card-number" name="card-number" required pattern="[0-9 ]{13,21}">
+
+				  <input class="name" id="the-card-name-id" name="card-holders-name" placeholder="Name on card">
+				  <input class="expiry-month" id="expiry-month" name="expiry-month" required pattern="(0[0-9]|1[12])">
+				  <input class="expiry-year" id="expiry-year" name="expiry-year" required pattern="19|[2-3][0-9]">
+				  <input class="cvc" name="cvc" required pattern="[0-9]{3,4}">
+				</div>
+				<div class="container-login1">
+
+					<div class="container-login1-form-btn">
+						<!--<input type="submit" value="Pay Now" class="login1-form-btn" />-->
+						<button class="login1-form-btn">Pay Now</button>
+					</div>
+
+				</div>
+			</form>
+		</div>
+		<br><br>
+		<div id="media-row">
+			<div id="fh5co-projects-feed" class="fh5co-projects-feed masonry" >
+				<div class="fh5co-project ">
+					<img src="images/img_7.png" width=460px >
+
+				</div>
+				<div class="fh5co-project " >
+					<img src="images/img_8.png" width=460px >
+
+				</div>
+				<div class="fh5co-project " >
+					<img src="images/img_9.png" width=460px >
+
+				</div>
+
+			</div>
+		</div>
+		<script>
+			var form  = document.getElementsByTagName('form')[0];
+			var cc = document.getElementById('card-number');
+			var expMM = document.getElementById('expiry-month');
+			var expYY = document.getElementById('expiry-year');
+			var error = document.querySelector('.error');
+			var cardname = document.getElementById('the-card-name-id');
+
+			function invalidCC(ccval){
+				console.log(ccval);
+				ccval = ccval.replace(/\s/g, '');
+				console.log(ccval);
+				console.log(luhn_validate(ccval), luhn_checksum(ccval));
+				return !luhn_validate(ccval);
+
+			}
+
+			function invalidCardName(ccname){
+				return ccname.length <= 1;
+
+			}
+
+			function invalidExpMonth(expMM){
+				if (expMM.length === 0){
+					return true;
+				}
+				var ival = parseInt(expMM);
+				return ival < 1 || ival > 12 || isNaN(ival);
+			}
+
+			function invalidExpYear(expYY){
+				if (expYY.length === 0){
+					return true;
+				}
+				var ival = parseInt(expYY);
+				return ival < 19 || ival > 39 || isNaN(ival);
+			}
+
+			form.addEventListener("submit", function (event) {
+
+				// Each time the user tries to send the data, we check
+				// if the email field is valid.
+				cc.className = cc.className.replace("invalid");
+				expMM.className = expMM.className.replace("invalid");
+				expYY.className = expYY.className.replace("invalid");
+				cardname.className = cardname.className.replace("invalid");
+
+
+				if (invalidCC(cc.value)) {
+					cc.className += " invalid";
+					error.innerHTML = "Invalid credit card number";
+					error.className = "error active";
+					event.preventDefault();
+					return;
+				} else {
+					cc.className += " valid"
+				}
+
+				if (invalidCardName(cardname.value)) {
+					cardname.className += " invalid";
+					error.innerHTML = "Invalid card name ";
+					error.className = "error active";
+					event.preventDefault();
+					return;
+				} else {
+					cardname.className += " valid"
+				}
+
+				if (invalidExpMonth(expMM.value)) {
+					expMM.className += " invalid";
+					error.innerHTML = "Invalid expiration month";
+					error.className = "error active";
+					event.preventDefault();
+					return;
+				} else {
+					expMM.className += " valid"
+				}
+
+				if (invalidExpYear(expYY.value)) {
+					expYY.className += " invalid";
+					error.innerHTML = "Invalid expiration year";
+					error.className = "error active";
+					event.preventDefault();
+					return;
+				} else {
+					expYY.className += " valid"
+				}
+
+				error.innerHTML = "";
+				error.className = "error";
+
+			}, false);
+
+			function luhn_checksum(code) {
+				var len = code.length
+				var parity = len % 2
+				var sum = 0
+				for (var i = len-1; i >= 0; i--) {
+					var d = parseInt(code.charAt(i))
+					if (i % 2 == parity) { d *= 2 }
+					if (d > 9) { d -= 9 }
+					sum += d
+				}
+				return sum % 10
+			}
+
+			/* luhn_caclulate
+			 * Return a full code (including check digit), from the specified partial code (without check digit).
+			 */
+			function luhn_caclulate(partcode) {
+				var checksum = luhn_checksum(partcode + "0")
+				return checksum == 0 ? 0 : 10 - checksum
+			}
+			function luhn_validate(fullcode) {
+				return luhn_checksum(fullcode) == 0
+			}
+
+
+			function getURLParameter(sParam){
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+
+				for (var i = 0; i < sURLVariables.length; i++) {
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] === sParam) {
+						return sParameterName[1];
+					}
+				}
+				return "";
+			}
+
+			var message = getURLParameter("message") + " ";
+
+			if (message.length > 0){
+				message = decodeURIComponent(message);
+				$('#message_panel').html(message);
+			}
+
+		</script>
+		<!-- END .container-fluid -->
+
+		<!-- END #fh5co-footer -->
+
+
+
+	</body>
+</html>
+

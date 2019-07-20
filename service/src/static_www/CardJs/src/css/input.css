@@ -1,0 +1,128 @@
+.card-js .card-number-wrapper,
+.card-js .name-wrapper {
+  margin-bottom: 15px;
+}
+
+.card-js .card-number-wrapper,
+.card-js .name-wrapper,
+.card-js .expiry-wrapper,
+.card-js .cvc-wrapper {
+  -webkit-box-shadow:0 1px 0 rgba(255,255,255,0.7),inset 0 1px 0 rgba(255,255,255,0.7);
+  -moz-box-shadow:0 1px 0 rgba(255,255,255,0.7),inset 0 1px 0 rgba(255,255,255,0.7);
+  -ms-box-shadow:0 1px 0 rgba(255,255,255,0.7),inset 0 1px 0 rgba(255,255,255,0.7);
+  -o-box-shadow: 0 1px 0 rgba(255,255,255,0.7),inset 0 1px 0 rgba(255,255,255,0.7);
+  box-shadow:0 1px 0 rgba(255,255,255,0.7),inset 0 1px 0 rgba(255,255,255,0.7);
+
+  position: relative;
+}
+
+
+.card-js .card-number-wrapper,
+.card-js .name-wrapper,
+.card-js .cvc-container,
+.card-js .expiry-container {
+  display: inline-block;
+}
+
+
+
+.card-js::after {
+  content: ' ';
+  display: table;
+  clear: both;
+}
+
+
+
+
+
+
+.card-js input,
+.card-js select {
+  color: #676767;
+  font-size: 15px;
+  font-weight: 300;
+  font-family: "Helvetica Neue","Helvetica",Arial,sans-serif;
+  height: 36px;
+  border: 1px solid #d9d9d9;
+
+  border-radius: 4px;
+  box-shadow: none;
+
+  background-color: #FDFDFD;
+
+  box-sizing: border-box;
+  padding: 0;
+
+  -webkit-transition: border-color .15s linear,box-shadow .15s linear;
+  -moz-transition: border-color .15s linear,box-shadow .15s linear;
+  -ms-transition: border-color .15s linear,box-shadow .15s linear;
+  -o-transition: border-color .15s linear,box-shadow .15s linear;
+  transition: border-color .15s linear,box-shadow .15s linear;
+}
+
+
+.card-js select {
+  -moz-appearance: none;
+  text-indent: 0.01px;
+  text-overflow: '';
+}
+
+
+.card-js input[disabled],
+.card-js select[disabled] {
+  background-color: #eee;
+  color: #555;
+}
+
+
+
+.card-js select option[hidden] {
+  color: #ABA9A9;
+}
+
+
+
+
+.card-js input:focus,
+.card-js select:focus {
+  background-color: #fff;
+  outline:0;
+  border-color: #66afe9;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+
+.card-js input[readonly="readonly"]:not([disabled]),
+.card-js input[readonly]:not([disabled]) {
+   background-color: #fff;
+   cursor: pointer;
+ }
+
+.card-js .has-error input,
+.card-js .has-error input:focus {
+  border-color: #F64B2F;
+  box-shadow: none;
+}
+
+
+
+
+
+
+
+
+
+.card-js .card-number-wrapper,
+.card-js .name-wrapper{
+  width: 100%;
+}
+
+
+.card-js input.card-number,
+.card-js input.name,
+.card-js input.cvc {
+  padding-left: 38px;
+  width: 100%;
+}

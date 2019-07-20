@@ -1,0 +1,41 @@
+.card-js .expiry-container {
+  width: 50%;
+  float: left;
+}
+.card-js .expiry-wrapper {
+  box-sizing: border-box;
+  margin-right: 5px;
+}
+.card-js .expiry-wrapper .expiry {
+  display: block;
+  width: 100%;
+}
+
+
+
+
+
+.card-js .expiry-wrapper .expiry-month {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-left: 30px;
+}
+
+.card-js .expiry-wrapper .expiry-year {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0;
+}
+
+
+.card-js .expiry-wrapper .expiry-month,
+.card-js .expiry-wrapper .expiry-year {
+  display: inline-block;
+}
+
+
+
+.card-js .expiry-wrapper .expiry {
+  width: 100%;
+  padding-left: 38px;
+}

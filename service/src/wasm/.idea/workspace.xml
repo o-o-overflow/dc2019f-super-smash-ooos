@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2b08b4ae-f5e2-40dc-99da-003974eecc0d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../../../ccservice/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../ccservice/setup/ccdbcreate.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../ccservice/setup/install_db.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../ccservice/setup/mysqld.cnf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../ccservice/src/bins.dat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../ccservice/src/run_cc_socket.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../../ccservice/src/tbd_ccproc.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../setup/default" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../setup/nginx.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../setup/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../bo.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../cc_proc.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../distraction.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../distraction.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../rungdb.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../service.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../tests/run_nodejs_server.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../ccservice/src/websocket.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../../ccservice/src/websocket.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../example_exploit/compotp.wasm" beforeDir="false" afterPath="$PROJECT_DIR$/../../../interaction/compotp.wasm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../example_exploit/exploit2.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../../interaction/exploit2.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../example_exploit/service.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../../Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../badservice.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../../../interaction/badservice1.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server.js" beforeDir="false" afterPath="$PROJECT_DIR$/../server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../tests/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/../tests/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/main.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="853">
+              <caret line="452" column="5" selection-start-line="452" selection-start-column="5" selection-end-line="452" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583_defs_1987.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5166">
+              <caret line="287" selection-start-line="287" selection-end-line="287" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>EMSCRIPTEN_BIND</find>
+      <find>convert</find>
+      <find>c_str</find>
+      <find>processCC</find>
+      <find>failCB</find>
+      <find>mySuccessCB</find>
+      <find>ccinfo</find>
+      <find>ccnum</find>
+      <find>jsparmLength</find>
+      <find>pack</find>
+      <find>fail</find>
+      <find>**succes</find>
+      <find>callback</find>
+      <find>successCallbackPtr</find>
+      <find>failCallback</find>
+      <find>genTransactionId</find>
+      <find>transid</find>
+      <find>packedSize</find>
+      <find>maxExp</find>
+      <find>logmsg</find>
+      <find>sleep</find>
+      <find>HOST_ADDR</find>
+      <find>sendToServer</find>
+      <find>PORT</find>
+      <find>loop</find>
+      <find>error</find>
+      <find>REPORT</find>
+      <find>atexit</find>
+      <find>END of</find>
+      <find>emscripten_set_main_loop</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>\</replace>
+      <replace>CCInfo</replace>
+      <replace>ccnumOut</replace>
+      <replace>success</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/iso-8583/dl_iso8583_defs_1987.h" />
+        <option value="$PROJECT_DIR$/iso-8583/dl_iso8583.h" />
+        <option value="$PROJECT_DIR$/iso-8583/dl_iso8583.c" />
+        <option value="$PROJECT_DIR$/iso-8583/dl_iso8583_fields.h" />
+        <option value="$PROJECT_DIR$/main.c" />
+        <option value="$PROJECT_DIR$/socket_communication.h" />
+        <option value="$PROJECT_DIR$/iso-8583/dl_iso8583_defs_1987.c" />
+        <option value="$PROJECT_DIR$/main.cpp" />
+      </list>
+    </option>
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="QrjgEavU" />
+  </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/.idea/wasm.iml" />
+        <option value="$PROJECT_DIR$/.idea/misc.xml" />
+        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+        <option value="$PROJECT_DIR$/.idea/modules.xml" />
+        <option value="$PROJECT_DIR$/.idea/deployment.xml" />
+        <option value="$PROJECT_DIR$/.idea/webServers.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="x" value="3949" />
+    <option name="y" value="140" />
+    <option name="width" value="2571" />
+    <option name="height" value="1973" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="wasm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wasm" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="wasm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="wasm" type="462c0819:PsiDirectoryNode" />
+              <item name="iso-8583" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../trwasm/service" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="web.server" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2b08b4ae-f5e2-40dc-99da-003974eecc0d" name="Default Changelist" comment="" />
+      <created>1560777370484</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1560777370484</updated>
+      <workItem from="1560777371776" duration="61641000" />
+      <workItem from="1560979474251" duration="1574000" />
+      <workItem from="1561118532300" duration="60574000" />
+      <workItem from="1561382217928" duration="3014000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="126803000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="611" y="80" width="1469" height="1127" extended-state="1" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14741318" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="File Transfer" order="7" visible="true" weight="0.107506365" />
+      <window_info anchor="bottom" id="Database Changes" order="8" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Cargo" order="3" />
+      <window_info anchor="right" id="make" order="4" />
+      <window_info anchor="right" id="Database" order="5" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_str.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="338">
+          <caret line="71" column="4" selection-start-line="71" selection-start-column="4" selection-end-line="71" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_str.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="59" column="15" lean-forward="true" selection-start-line="59" selection-start-column="15" selection-end-line="59" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583_fields.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1643">
+          <caret line="240" column="12" lean-forward="true" selection-start-line="240" selection-start-column="12" selection-end-line="240" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583_common.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1046">
+          <caret line="91" column="1" selection-start-line="91" selection-start-column="1" selection-end-line="91" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583_common.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="972">
+          <caret line="54" column="49" selection-start-line="54" selection-start-column="44" selection-end-line="54" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/socket_communication.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="594">
+          <caret line="33" column="30" selection-start-line="33" selection-start-column="30" selection-end-line="33" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583_defs_1987.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="684">
+          <caret line="39" selection-start-line="39" selection-end-line="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1046">
+          <caret line="87" selection-start-line="87" selection-end-line="88" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583_fields.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="82" column="7" selection-start-line="82" selection-start-column="7" selection-end-line="82" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="853">
+          <caret line="452" column="5" selection-start-line="452" selection-start-column="5" selection-end-line="452" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/iso-8583/dl_iso8583_defs_1987.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5166">
+          <caret line="287" selection-start-line="287" selection-end-line="287" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

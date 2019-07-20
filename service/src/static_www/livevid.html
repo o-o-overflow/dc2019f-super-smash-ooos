@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+
+<head xmlns:padding-top="http://www.w3.org/1999/xhtml">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Super Smash OOOs - Pay-Per-View</title>
+
+  <!--
+	//////////////////////////////////////////////////////
+
+	FREE HTML5 TEMPLATE
+	DESIGNED & DEVELOPED by FREEHTML5.CO
+
+	Website: 		http://freehtml5.co/
+	Email: 			info@freehtml5.co
+	Twitter: 		http://twitter.com/fh5co
+	Facebook: 		https://www.facebook.com/fh5co
+
+	//////////////////////////////////////////////////////
+	 -->
+
+  	<!-- Facebook and Twitter integration -->
+
+	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+	<link rel="shortcut icon" href="favicon.ico">
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700,900' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Slab:300,400,700" rel="stylesheet">
+
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/card-js.min.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/card-js.min.css">
+	<script>
+		function getURLParameter(sParam){
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+
+			for (var i = 0; i < sURLVariables.length; i++) {
+				var sParameterName = sURLVariables[i].split('=');
+				if (sParameterName[0] === sParam) {
+					return sParameterName[1];
+				}
+			}
+			return "";
+		}
+		function do_page_load() {
+			var cert = getURLParameter("cert");
+			var message = getURLParameter("message") + " " + cert;
+			console.log("message=",message);
+
+			if (message.length > 0){
+				message = decodeURIComponent(message);
+				$('#message_panel').html(message);
+			}
+
+			var stream = getURLParameter("stream");
+			stream = decodeURIComponent(stream);
+			console.log("stream", stream);
+			$('#video_frame').attr('src', stream);
+
+		}
+	</script>
+
+	</head>
+	<body onload="do_page_load()">
+		<header id="fh5co-header" role="banner">
+			<div class="container text-center" style="z-index: 1;">
+                <div id="message_panel" ></div>
+                <div id="fh5co-logo" >
+					<a href="index.html" ><img src="images/logo.png" width="800" ></a>
+				</div>
+			</div>
+			<!--<nav>
+				<ul>
+					<li><b>SSOOO's Heros</b></li>
+					<li><img src="images/img_1.jpg" height="130px" width="200px"></li>
+					<li><img src="images/img_2.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_3.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_4.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_5.jpg" height="130px" width="200px" ></li>
+					<li><img src="images/img_6.jpg" height="130px" width="200px" ></li>
+				</ul>
+			</nav> -->
+		</header>
+		<!-- END #fh5co-header -->
+		<br>
+		<div style="width:100%;background: #000000">
+			<p align="center">
+			<iframe id="video_frame" width="1242" height="932" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+			</p>
+		</div>
+
+
+		<br><br>
+		<div id="media-row">
+			<div id="fh5co-projects-feed" class="fh5co-projects-feed masonry" >
+				<div class="fh5co-project ">
+					<img src="images/img_7.png" width=460px >
+
+				</div>
+				<div class="fh5co-project " >
+					<img src="images/img_8.png" width=460px >
+
+				</div>
+				<div class="fh5co-project " >
+					<img src="images/img_9.png" width=460px >
+
+				</div>
+
+			</div>
+		</div>
+		<!-- END .container-fluid -->
+
+		<!-- END #fh5co-footer -->
+
+
+	</body>
+</html>
+

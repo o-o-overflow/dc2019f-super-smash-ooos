@@ -1,0 +1,23 @@
+.card-js .icon {
+  position: absolute;
+  display: block;
+  width:24px;
+  height:17px;
+  left: 8px;
+  top: 10px;
+  pointer-events: none;
+}
+.card-js .icon.right {
+  right: 8px;
+  left: auto;
+}
+.card-js .icon.popup {
+  cursor: pointer;
+  pointer-events: auto;
+}
+.card-js .icon .svg {
+  fill: #888;
+}
+.card-js .icon.popup .svg {
+  fill: #aaa !important;
+}

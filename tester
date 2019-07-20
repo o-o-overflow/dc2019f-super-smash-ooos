@@ -1,0 +1,194 @@
+#!/usr/bin/env python3
+
+FLAG_RE = r"OOO{[^}]*}"
+IMAGE_FMT = "dc2019q:%s"
+
+import concurrent.futures
+import subprocess
+import tempfile
+import logging
+import json
+import yaml
+import time
+import sys
+import re
+import os
+import traceback
+
+logging.basicConfig()
+_LOG = logging.getLogger("OOO")
+_LOG.setLevel("DEBUG")
+
+
+service_dir = os.path.dirname(__file__)
+
+_LOG.info("USING YAML: %s/info.yml", service_dir)
+service_conf = yaml.load(open(os.path.join(service_dir, "info.yml")))
+service_name = service_conf['service_name']
+_LOG.info("SERVICE ID: %s", service_name)
+
+image_tag = IMAGE_FMT % service_name
+interaction_image_tag = IMAGE_FMT % service_name + '-interaction'
+container_tag = "running-%s" % service_name
+
+def validate_yaml():
+	_LOG.info("Validating yaml...")
+	assert 'service_name' in service_conf, "no service name specified"
+	assert 'flag' in service_conf, "no service flag specified"
+	if 'test flag' in service_conf['flag']: _LOG.critical("REMEBER TO CHANGE THE FLAG: %s looks like the test flag", service_conf['flag'])
+	if not re.match(FLAG_RE, service_conf['flag']):
+		_LOG.critical("FLAG %s DOES NOT CONFORM TO THE FLAG FORMAT", service_conf['flag'])
+		if not service_conf['violates_flag_format']:
+			assert False, "you violated the flag format!"
+
+def build_service():
+	if os.path.exists(os.path.join(service_dir, "service", "Dockerfile")):
+		_LOG.info("Building service image...")
+		assert os.system("docker build -t %s %s/service" % (image_tag, service_dir)) == 0, "service docker image build failed"
+	else:
+		_LOG.warning("no dockerfile found for service...")
+
+def build_interactions():
+	if os.path.exists(os.path.join(service_dir, "interaction", "Dockerfile")):
+		_LOG.info("Building interaction image...")
+		assert os.system("docker build -t %s %s/interaction" % (interaction_image_tag, service_dir)) == 0, "interaction docker image build failed"
+
+def _start_container():
+	_stop_container()
+	assert os.system("docker run --name %s --rm -d %s" % (container_tag, image_tag)) == 0, "service container failed to start"
+def _stop_container():
+	os.system("docker kill %s 2>/dev/null >/dev/null" % container_tag)
+	os.system("docker rm %s 2>/dev/null >/dev/null" % container_tag)
+
+def launch_service():
+	_LOG.debug("starting container")
+	_start_container()
+	time.sleep(1)
+	container_config = json.loads(subprocess.check_output("docker inspect %s" % container_tag, shell=True).decode('utf-8'))
+	ip_address = container_config[0]['NetworkSettings']['Networks']['bridge']['IPAddress']
+	port = list(container_config[0]['Config']['ExposedPorts'].keys())[0].split("/")[0]
+	_LOG.debug("network endpoint: %s:%s", ip_address, port)
+	return ip_address, port
+
+def test_service(ip_address, port):
+	_LOG.info("Testing container...")
+
+	_LOG.info("launching interaction container")
+	interaction_container = subprocess.check_output("docker run --rm -i -d %s" % interaction_image_tag, shell=True).strip().decode('utf-8')
+
+	def _run_interaction(script):
+		_LOG.info("launching %s", script)
+
+		output = subprocess.check_output("docker exec %s %s %s %s" % (interaction_container, script, ip_address, port), shell=True)
+		if os.path.basename(script).startswith("exploit"):
+			_LOG.info("... checking for the flag")
+			assert service_conf['flag'].encode('utf-8') in output, "exploit %s did not print the flag"%script #pylint:disable=unsupported-membership-test
+
+	_LOG.info("launching interaction scripts")
+	interaction_files = service_conf['interactions']
+	for f in interaction_files:
+		_run_interaction(f)
+
+	_LOG.info("STRESS TEST TIME")
+	n = 2
+	old_level = _LOG.level
+	while n <= service_conf['concurrent_connections']:
+		_LOG.info("stress testing with %d concurrent connections!", n)
+		_LOG.setLevel(max(logging.WARNING, old_level))
+		with concurrent.futures.ThreadPoolExecutor(max_workers=n) as pool:
+			results = pool.map(_run_interaction, (interaction_files*n)[:n])
+		try:
+			for result in results:
+				pass
+		except Exception as e:
+			_LOG.error('One iteration returns an exception: %s' % str(e))
+			_LOG.error(traceback.format_exc())
+			sys.exit(1)
+
+		_LOG.setLevel(old_level)
+
+		n *= 2
+	_LOG.info("SHORT-READ SANITY CHECK")
+	assert os.system('docker run --rm ubuntu bash -ec "for i in {1..128}; do echo > /dev/tcp/%s/%s; done"' % (ip_address, port)) == 0
+	_LOG.info("waiting for service to clean up after short reads")
+	time.sleep(20)
+
+	num_procs = len(subprocess.check_output("docker exec %s ps aux" % container_tag, shell=True).splitlines())
+	assert num_procs < 20, "your service did not clean up after short reads"
+
+	_LOG.info("stopping interaction container")
+	os.system("docker kill %s" % interaction_container)
+
+def build_bundle():
+	_LOG.info("building public bundle!")
+
+	tempdir = tempfile.mkdtemp()
+	public_path = os.path.join(tempdir, service_name)
+	os.makedirs(public_path)
+	for f in service_conf['public_files']:
+		_LOG.debug("copying file %s into public files", f)
+		cmd = "cp -L %s/%s %s/%s" % (service_dir, f, public_path, os.path.basename(f))
+		print(os.getcwd(), cmd)
+		assert os.system(cmd) == 0, "failed to retrieve public file %s" % f
+
+	time.sleep(2)
+	assert os.system("tar cvzf %s/public_bundle.tar.gz -C %s %s" % (service_dir, tempdir, service_name)) == 0, "public file tarball failed; this should not be your fault"
+
+	print("")
+	print("")
+	_LOG.critical("PLEASE VERIFY THAT THIS IS CORRECT: files in public bundle:")
+	os.system("tar tvzf %s/public_bundle.tar.gz" % service_dir)
+
+	_stop_container()
+
+	print("")
+	print("")
+	print("ATTENTION: PLEASE MAKE SURE THAT THE CONTENTS OF public_files.tar.gz (SHOWN ABOVE) MAKE SENSE.")
+	print("")
+	print("")
+
+
+if __name__ == '__main__':
+	validate_yaml()
+	arg = sys.argv[1] if len(sys.argv) >= 2 else ""
+	if arg == 'bundle':
+		build_bundle()
+	elif arg == 'build':
+		build_service()
+		build_interactions()
+		build_bundle()
+	elif arg == 'test':
+		if len(sys.argv) == 2:
+			_ip_address, _port = launch_service()
+			test_service(_ip_address, _port)
+		else:
+			test_service(sys.argv[2], int(sys.argv[3]))
+	elif arg == 'launch':
+		build_service()
+		try:
+			_ip_address, _port = launch_service()
+			print("")
+			print("SERVICE RUNNING AT: %s %s" % (_ip_address, _port))
+			print("nc %s %s" % (_ip_address, _port))
+			print("./tester test %s %s" % (_ip_address, _port))
+			print("%s:%s" % (_ip_address, _port))
+			input()
+		finally:
+			_stop_container()
+	elif arg == 'deploy':
+		registry = sys.argv[2]
+		tagcmd = "docker tag dc2019q:%s %s:5000/dc2019q-%s:latest" % (service_name.lower(), registry, service_name.lower())
+		print(tagcmd)
+		assert os.system(tagcmd) == 0
+		pushcmd = "docker push %s:5000/dc2019q-%s:latest" % (registry, service_name.lower())
+		print(pushcmd)
+		assert os.system(pushcmd) == 0
+	else:
+		try:
+			build_service()
+			build_interactions()
+			_ip_address, _port = launch_service()
+			test_service(_ip_address, _port)
+			build_bundle()
+		finally:
+			_stop_container()
