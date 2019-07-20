@@ -1,7 +1,9 @@
-# xorwasm
+# Super Smash OOOs
 
-WebAssembly shellcoding challenge.
+The virtual fighting event of the decade is coming soon.  Will you be able to see the battle royale between team EMACS and team VIM?
 
-Accessible via port 9999.
+You could just pay the $59.99 with your credit card, but who wants to do that?  What if it's not as good as promised?
 
-Our competitors created a new OTP computation that they say is difficult to break. However, we have access to the interface that loads the WebAssembly process. It's possible to submit our own WebAssembly and have their server run it.   
+
+
+

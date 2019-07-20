@@ -35,7 +35,7 @@ RUN useradd -s /bin/bash -m oooser
 WORKDIR /app
 
 COPY src/package*.json ./
-RUN npm install express connect-timeout
+RUN npm install express connect-timeout ws
 
 RUN touch /var/log/websocket.log && chmod 0600 /var/log/websocket.log && chown oooser:oooser /var/log/websocket.log
 RUN echo "OOO{this is a test flag}" > /flag && chmod 400 /flag && chown oooser:oooser /flag
@@ -48,6 +48,6 @@ RUN chmod 0500 ccprocessor/run_cc_socket.sh && chown oooser:oooser ccprocessor/r
 RUN chmod 0500 ccprocessor/websocket.py && chown oooser:oooser ccprocessor/websocket.py
 RUN cd ccprocessor/py8583 && pip3 install -e .
 
-EXPOSE 80
+EXPOSE 8888
 
 CMD /etc/init.d/nginx start && /etc/init.d/mysql start && /app/run_web_sys.sh
