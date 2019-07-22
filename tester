@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 
 FLAG_RE = r"OOO{[^}]*}"
-IMAGE_FMT = "dc2019q:%s"
+CTF_TAG = "dc2019f"
+IMAGE_FMT = CTF_TAG + "-%s"
 
 import concurrent.futures
 import subprocess
 import tempfile
 import logging
+import string
 import json
 import yaml
 import time
 import sys
 import re
 import os
-import traceback
 
 logging.basicConfig()
 _LOG = logging.getLogger("OOO")
@@ -29,6 +30,7 @@ _LOG.info("SERVICE ID: %s", service_name)
 
 image_tag = IMAGE_FMT % service_name
 interaction_image_tag = IMAGE_FMT % service_name + '-interaction'
+local_tester_image_tag = IMAGE_FMT % service_name + '-local-tester'
 container_tag = "running-%s" % service_name
 
 def validate_yaml():
@@ -41,6 +43,10 @@ def validate_yaml():
 		if not service_conf['violates_flag_format']:
 			assert False, "you violated the flag format!"
 
+	assert (not set(service_conf['service_name']) - set(string.ascii_lowercase + '-' + string.digits)) and service_conf['service_name'][0] in string.ascii_lowercase, "SERVICE NAME MUST BE KUBERNETES-COMPATIBLE (lowercase, '-', and digits, starting with a letter)"
+
+	assert subprocess.check_output(("git -C %s remote get-url origin"%service_dir).split()).decode('latin1').split("/")[-1].split(".git")[0] == CTF_TAG + "-" + service_name, "GIT REPOSITORY MUST BE THE SAME AS THE CTF TAG PLUS THE SERVICE NAME (%s-%s)" % (CTF_TAG, service_name)
+
 def build_service():
 	if os.path.exists(os.path.join(service_dir, "service", "Dockerfile")):
 		_LOG.info("Building service image...")
@@ -49,9 +55,14 @@ def build_service():
 		_LOG.warning("no dockerfile found for service...")
 
 def build_interactions():
-	if os.path.exists(os.path.join(service_dir, "interaction", "Dockerfile")):
+	if os.path.exists(os.path.join(service_dir, "remote-interaction", "Dockerfile")):
 		_LOG.info("Building interaction image...")
-		assert os.system("docker build -t %s %s/interaction" % (interaction_image_tag, service_dir)) == 0, "interaction docker image build failed"
+		assert os.system("docker build -t %s %s/remote-interaction" % (interaction_image_tag, service_dir)) == 0, "interaction docker image build failed"
+
+def build_local():
+	if os.path.exists(os.path.join(service_dir, "local-tester", "Dockerfile")):
+		_LOG.info("Building interaction image...")
+	assert os.system("docker build -t %s --build-arg SERVICE=%s %s/local-tester" % (local_tester_image_tag, image_tag, service_dir)) == 0, "local tester build failed"
 
 def _start_container():
 	_stop_container()
@@ -70,8 +81,22 @@ def launch_service():
 	_LOG.debug("network endpoint: %s:%s", ip_address, port)
 	return ip_address, port
 
-def test_service(ip_address, port):
-	_LOG.info("Testing container...")
+def test_local():
+	_LOG.info("Local-testing container...")
+
+	tester_container = subprocess.check_output("docker run --rm -i -d %s" % local_tester_image_tag, shell=True).strip().decode('utf-8')
+
+	def _run_test(script):
+		_LOG.info("launching %s", script)
+		assert os.system("docker exec %s %s" % (tester_container, script)) == 0, "Check %s failed!" % script
+
+	_LOG.info("launching local tests")
+	tests = service_conf['local_tests']
+	for f in tests:
+		_run_test(f)
+
+def test_remote(ip_address, port):
+	_LOG.info("Remote-testing container...")
 
 	_LOG.info("launching interaction container")
 	interaction_container = subprocess.check_output("docker run --rm -i -d %s" % interaction_image_tag, shell=True).strip().decode('utf-8')
@@ -85,7 +110,7 @@ def test_service(ip_address, port):
 			assert service_conf['flag'].encode('utf-8') in output, "exploit %s did not print the flag"%script #pylint:disable=unsupported-membership-test
 
 	_LOG.info("launching interaction scripts")
-	interaction_files = service_conf['interactions']
+	interaction_files = service_conf['remote_interactions']
 	for f in interaction_files:
 		_run_interaction(f)
 
@@ -98,20 +123,20 @@ def test_service(ip_address, port):
 		with concurrent.futures.ThreadPoolExecutor(max_workers=n) as pool:
 			results = pool.map(_run_interaction, (interaction_files*n)[:n])
 		try:
-			for result in results:
+			for _ in results:
 				pass
-		except Exception as e:
-			_LOG.error('One iteration returns an exception: %s' % str(e))
-			_LOG.error(traceback.format_exc())
+		except Exception as e: #pylint:disable=broad-except
+			_LOG.error('One iteration returns an exception: %s', str(e), exc_info=True)
 			sys.exit(1)
 
 		_LOG.setLevel(old_level)
 
 		n *= 2
+
 	_LOG.info("SHORT-READ SANITY CHECK")
 	assert os.system('docker run --rm ubuntu bash -ec "for i in {1..128}; do echo > /dev/tcp/%s/%s; done"' % (ip_address, port)) == 0
 	_LOG.info("waiting for service to clean up after short reads")
-	time.sleep(20)
+	time.sleep(15)
 
 	num_procs = len(subprocess.check_output("docker exec %s ps aux" % container_tag, shell=True).splitlines())
 	assert num_procs < 20, "your service did not clean up after short reads"
@@ -155,14 +180,17 @@ if __name__ == '__main__':
 		build_bundle()
 	elif arg == 'build':
 		build_service()
+		build_local()
 		build_interactions()
 		build_bundle()
 	elif arg == 'test':
 		if len(sys.argv) == 2:
 			_ip_address, _port = launch_service()
-			test_service(_ip_address, _port)
+			test_local()
+			test_remote(_ip_address, _port)
 		else:
-			test_service(sys.argv[2], int(sys.argv[3]))
+			test_local()
+			test_remote(sys.argv[2], int(sys.argv[3]))
 	elif arg == 'launch':
 		build_service()
 		try:
@@ -186,9 +214,11 @@ if __name__ == '__main__':
 	else:
 		try:
 			build_service()
+			build_local()
 			build_interactions()
 			_ip_address, _port = launch_service()
-			test_service(_ip_address, _port)
+			test_local()
+			test_remote(_ip_address, _port)
 			build_bundle()
 		finally:
 			_stop_container()

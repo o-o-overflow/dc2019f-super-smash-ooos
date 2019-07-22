@@ -33,7 +33,7 @@
 static DL_ISO8583_FIELD_DEF _iso8583_1987_fields[] = {
 /*   0 */ {kDL_ISO8583_N  ,  4,kDL_ISO8583_FIXED  }, // Message Type Indicator
 /*   1 */ {kDL_ISO8583_BMP, 16,kDL_ISO8583_CONTVAR}, // Bitmap
-/*   2 */ {kDL_ISO8583_N  , 32,kDL_ISO8583_LLVAR  }, // Primary Account Number
+/*   2 */ {kDL_ISO8583_N  , 32,kDL_ISO8583_LLVAR  }, // Primary Account Number  switch to 19 to patch
 /*   3 */ {kDL_ISO8583_N  ,  6,kDL_ISO8583_FIXED  }, // Processing Code
 /*   4 */ {kDL_ISO8583_N  , 12,kDL_ISO8583_FIXED  }, // Amount, Txn
 /*   5 */ {kDL_ISO8583_N  , 12,kDL_ISO8583_FIXED  }, // Amount, Settlement

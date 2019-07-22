@@ -9,7 +9,7 @@ extern "C" {
 #include "socket_communication.h"
 
 }
-
+#include <regex>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -84,6 +84,8 @@ char *logmsg, *fmtstr, *ccnumOut ;
 
 #define MAXFNS 5
 string str_transid;
+const char ptrn_str[] = "http://"; // const char ptrn_str[] = "...'...";
+regex ptrn(ptrn_str);
 
 DL_ISO8583_HANDLER isoHandler;
 
@@ -515,7 +517,7 @@ public:
         (void) DL_ISO8583_MSG_SetField_Str(42, (DL_UINT8*)merchantID.c_str(), &isoHandler, isoMsg); // merchant ID
 
         //free(timebuffer);
-
+        location = regex_replace(location, ptrn, "https://");
         (void) DL_ISO8583_MSG_SetField_Str(125, (DL_UINT8*)location.c_str(), &isoHandler, isoMsg); // private use
 
         return 0;

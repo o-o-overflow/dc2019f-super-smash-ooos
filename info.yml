@@ -1,5 +1,5 @@
 # Info for the schoreboard
-service_name: "SuperSmashOOOs"
+service_name: "super-smash-ooos"
 description: "The biggest pay-per-view event of the year live streaming Super Smash OOOs is starting in a few minutes.  But who wants to pay $59.99, when you can watch it for free? "
 tags:
   - pwn
@@ -28,6 +28,9 @@ authors:
 
 # These are the files that will be "public" to the teams via the scoreboard.
 # The paths are relative to the repository!
+
+# I'm not exposing the sendcc.js b/c they should be able to figure out that it's using the callbacks from
+# the source code in the wasm that adds the functions.
 public_files:
   - service/src/sendcc.wasm
   - service/src/server.js
@@ -37,8 +40,21 @@ public_files:
 # Scripts are automatically determined to be exploit scripts if they start with the word "exploit".
 # Exploit scripts must output the flag using "FLAG: <FLAG>" and exit with 0 if the flag was captured correctly. 
 # The paths are absolute in the `interaction` docker container.
-interactions:
+remote_interactions:
   - /exploit1.py
   - /exploit2.py
   - /exploit3.py
   - /check1.py
+
+
+# These local test scripts are run inside of a "local interaction" docker container that is derived from the service container.
+# They are for running more hardcore tests (i.e., static analysis, etc).
+# The paths are absolute in the `local-test` docker container.
+local_tests:
+  - /check_filetype.sh
+
+# These are also local tests, but they are run with a patched and an unpatched version to test invariance!
+# For example, you might want to prevent patches from changing vertain traced behavior.
+# The paths are absolute in the `local-test` docker container.
+local_invariants:
+  - /check_invariance.sh
