@@ -10,7 +10,8 @@ violates_flag_format: false # if this is not "true", the flag is verfied against
 # At some point we may start blocking all egress connections. Set this to True if your service needs them. DO NOT RELY ON THIS FOR BLOCKING THOUGH.
 allow_egress: False
 
-flag: "OOO{this is a test flag}" # this is the flag of the service
+initial_flag: "OOO{this is a test flag}" # this is the flag of the service
+flag_path: /flag # the location of the flag (for fresh flags). Leave blank for single-flag services (i.e., quals)
 
 # Type can be normal or king_of_the_hill
 type: normal
@@ -35,6 +36,9 @@ public_files:
   - service/src/sendcc.wasm
   - service/src/server.js
 
+patchable_files:
+  - /app/
+
 # Test scripts are heavily encouraged.
 # All scripts should exit 0 if nothing went wrong.
 # Scripts are automatically determined to be exploit scripts if they start with the word "exploit".
@@ -43,8 +47,9 @@ public_files:
 remote_interactions:
   - /exploit1.py
   - /exploit2.py
-  - /exploit3.py
   - /check1.py
+  - /check2.py
+  - /check3.py
 
 
 # These local test scripts are run inside of a "local interaction" docker container that is derived from the service container.
@@ -53,8 +58,4 @@ remote_interactions:
 local_tests:
   - /check_filetype.sh
 
-# These are also local tests, but they are run with a patched and an unpatched version to test invariance!
-# For example, you might want to prevent patches from changing vertain traced behavior.
-# The paths are absolute in the `local-test` docker container.
-local_invariants:
-  - /check_invariance.sh
+

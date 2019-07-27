@@ -10,6 +10,10 @@ from subprocess import Popen, PIPE, call
 
 server_js = os.path.dirname(os.path.abspath(__file__)) + "/run_nodejs_server.sh"
 
+"""
+This tests various error messages from the database.
+"""
+
 
 def test_bad_cc_bin():
 

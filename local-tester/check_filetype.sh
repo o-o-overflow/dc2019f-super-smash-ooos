@@ -21,7 +21,7 @@ rm /tmp/app/mod_sendcc.top
 echo "[+] Testing support files invariance"
 #for fn in ${BASESRC}/*.js; do
 
-find ${BASESRC} -type f| grep -v "sendcc.wasm" | while read fn; do
+find ${BASESRC} -type f| grep -v "sendcc.wasm" |grep -v "\.pyc"| while read fn; do
   other_fp="/tmp/app${fn:${#BASESRC}}"
 
   if [[ -f ${fn} && -f ${other_fp} ]]; then

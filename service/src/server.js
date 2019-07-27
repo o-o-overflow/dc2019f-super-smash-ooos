@@ -33,11 +33,9 @@ function processRequest(req, resp, next){
     function successCB(ptrRespMessage, responseCode, ptrResponseTransId ) {
 
         var responseTransID = convertIntPtr(ptrResponseTransId);
-        var cert = "";
 
         if (transactionId === responseTransID){
-            cert = config.cc.get_cert(responseTransID);
-            resp.redirect(config.video_loc + "?message=Viewing authorized&cert=" + cert + "&stream=" + config.cc.get_stream(responseTransID));
+            resp.redirect(config.cc.build_authd_url(responseTransID));
         } else {
             resp.redirect("/purchase.html?message=Authorized id did not match sent id")
         }

@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 import os
 import sys
 import signal
@@ -7,10 +7,12 @@ import traceback
 from time import sleep
 from os.path import exists
 from subprocess import Popen, PIPE, call
-import re
-import urllib.parse
-flag_pattern = re.compile(r"OOO%7B[A-Za-z0-9_\-!@#$%^&*]{20,100}%7D")
 
+server_js = os.path.dirname(os.path.abspath(__file__)) + "/run_nodejs_server.sh"
+
+"""
+Tests bad invalid referrer
+"""
 
 def test_sqli_invalid_referrer():
     stdout = make_contact("374289111111115", "21", "12",
@@ -22,16 +24,7 @@ def test_sqli_invalid_referrer():
         print(stdout)
         raise ae
 
-def test_sqli_bypass_referrer():
-    stdout = make_contact("6360337890123455", "21","12",
-                          "http://testme.com/profile.html' or 'a'='a")
-
-    try:
-        assert stdout.find(b"/purchase.html?message=The%20pan%20was%20not%20found%20in%20accounts%20table") > -1
-    except AssertionError as ae:
-        print(stdout)
-        raise ae
-
+#
 #
 def make_contact(ccnum, expMM, expYY, referer_val="http://goforit.com/purchase.html"):
     url = "http://{}:{}/cc?card-number={}&expiry-year={}&expiry-month={}".format(sys.argv[1], sys.argv[2], ccnum, expYY, expMM)

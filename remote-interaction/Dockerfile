@@ -13,7 +13,7 @@ RUN echo "travis_fold:start:DIpip\033[33;1minteractions Dockerfile pip\033[0m" &
 
 COPY exploit*.py /
 
-COPY check1.py /check1.py
+COPY check*.py /
 
 RUN chmod 777 /*.py
 

