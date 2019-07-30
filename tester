@@ -8,7 +8,9 @@ import concurrent.futures
 import contextlib
 import subprocess
 import tempfile
+import pathlib
 import logging
+import shutil
 import random
 import string
 import json
@@ -52,12 +54,48 @@ def launch_container(image=SERVICE_IMAGE, container_id=None):
 	port = list(container_config[0]['Config']['ExposedPorts'].keys())[0].split("/")[0] if 'ExposedPorts' in container_config[0]['Config'] else None
 	_LOG.debug("network endpoint: %s:%s", ip_address, port)
 
+	test_patchable_variable(image, container_id)
+
 	try:
 		yield container_id, ip_address, port
 	finally:
 		_LOG.debug("stopping container %s", container_id)
 		os.system("docker kill %s 2>/dev/null >/dev/null" % container_id)
 		os.system("docker rm %s 2>/dev/null >/dev/null" % container_id)
+
+
+def test_patchable_variable(image, container_id):
+	# for service images of normal type verify the declared patchable file exist in the service container
+	if image != SERVICE_IMAGE:
+		_LOG.info("Skipping patchable tests for {img} b/c not a service image.".format(img=image))
+		return
+	if SERVICE_CONF['type'].lower() == "king_of_the_hill":
+		_LOG.info("Skipping patchable tests for {img} b/c it is king of the hill.".format(img=image))
+		return
+
+	assert 'patchable_file' in SERVICE_CONF, "patchable_file key not found in yaml even though this is normal service."
+	tmp_file = pathlib.Path("/") / "tmp" / "yadigan_idigis_pudigunk"
+
+	# just in case error occurred while trying to remove during last execution
+	if tmp_file.is_file():
+		tmp_file.unlink()
+	if tmp_file.is_dir():
+		shutil.rmtree(tmp_file)
+
+	cmd = "docker cp {cid}:{pf} {tf}".format(cid=container_id, pf=SERVICE_CONF['patchable_file'], tf=tmp_file)
+	_LOG.debug("running command {cmd}".format(cmd=cmd))
+	assert os.system(cmd) == 0, "failed to copy patchable file from {cid} container using '{cmd}'".format(cid=container_id, cmd=cmd)
+
+	assert tmp_file.exists(), "{tf} does not exist from {pf}.".format(tf=tmp_file, pf=SERVICE_CONF['patchable_file'])
+	try:
+		assert tmp_file.is_file, "Copying {pf} resulted in a directory but only a single file is patchable".format(pf=SERVICE_CONF['patchable_file'])
+		tmp_file.unlink()
+	except AssertionError as ae:
+		shutil.rmtree(tmp_file)
+		raise ae
+
+	_LOG.info("Service passed patchable tests.")
+
 
 def validate_yaml():
 	_LOG.info("Validating yaml...")
@@ -147,7 +185,7 @@ def run_interactions(ip_address, port, flag=SERVICE_CONF['initial_flag'], max_co
 			_LOG.info("STRESS TESTING (%d concurrent connections)", n)
 			_LOG.setLevel(max(logging.WARNING, old_level))
 			with concurrent.futures.ThreadPoolExecutor(max_workers=n) as pool:
-				results = pool.map(_run_interaction, ((interaction_files*n)[:n]))
+				results = pool.map(_run_interaction, (interaction_files*n)[:n])
 			try:
 				for _ in results:
 					pass
@@ -155,19 +193,24 @@ def run_interactions(ip_address, port, flag=SERVICE_CONF['initial_flag'], max_co
 				_LOG.error('One iteration returns an exception: %s', str(e), exc_info=True)
 				sys.exit(1)
 
-				_LOG.setLevel(old_level)
+			_LOG.setLevel(old_level)
 
 			n *= 2
 
-def test_short_reads():
-		with launch_container() as (service_container, ip_address, port):
-			_LOG.info("SHORT-READ SANITY CHECK")
-			assert os.system('docker run --rm ubuntu bash -ec "for i in {1..128}; do echo > /dev/tcp/%s/%s; done"' % (ip_address, port)) == 0
-			_LOG.info("waiting for service to clean up after short reads")
-			time.sleep(15)
 
-			num_procs = len(subprocess.check_output("docker exec %s ps aux" % service_container, shell=True).splitlines())
-			assert num_procs < 21, "your service did not clean up after short reads"
+def test_short_reads():
+	with launch_container() as (service_container, ip_address, port):
+		_LOG.info("SHORT-READ SANITY CHECK")
+		ALLOWED_DIFF = 2
+		start_num_procs = len(subprocess.check_output("docker exec %s ps aux" % service_container, shell=True).splitlines())
+
+		assert os.system('docker run --rm ubuntu bash -ec "for i in {1..128}; do echo > /dev/tcp/%s/%s; done"' % (ip_address, port)) == 0
+		_LOG.info("waiting for service to clean up after short reads")
+		time.sleep(15)
+
+		final_num_procs = len(subprocess.check_output("docker exec %s ps aux" % service_container, shell=True).splitlines())
+		assert final_num_procs < (start_num_procs + ALLOWED_DIFF), "your service did not clean up after short reads starting procs = {sp} final={fp}".format(sp=start_num_procs, fp=final_num_procs)
+
 
 def build_bundle():
 	_LOG.info("building public bundle!")
@@ -221,10 +264,10 @@ if __name__ == '__main__':
 			input()
 	elif arg == 'deploy':
 		registry = sys.argv[2]
-		tagcmd = "docker tag dc2019f-%s %s:5000/dc2019f-%s:latest" % (SERVICE_NAME.lower(), registry, SERVICE_NAME.lower())
+		tagcmd = "docker tag dc2019q:%s %s:5000/dc2019q-%s:latest" % (SERVICE_NAME.lower(), registry, SERVICE_NAME.lower())
 		print(tagcmd)
 		assert os.system(tagcmd) == 0
-		pushcmd = "docker push %s:5000/dc2019f-%s:latest" % (registry, SERVICE_NAME.lower())
+		pushcmd = "docker push %s:5000/dc2019q-%s:latest" % (registry, SERVICE_NAME.lower())
 		print(pushcmd)
 		assert os.system(pushcmd) == 0
 	else:
