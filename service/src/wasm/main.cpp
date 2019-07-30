@@ -69,8 +69,9 @@ void finish(int result) {
         close(server.fd);
         server.fd = 0;
     }
-    //printf("\tfinishing and cancelling main loop");
+    fprintf(stderr, "\tfinishing and cancelling main loop and exiting! result=%d\n", result);
     emscripten_cancel_main_loop();
+    //emscripten_force_exit(result);
     //REPORT_RESULT(result);
 
 }
@@ -116,20 +117,20 @@ static char *genTransactionId(char *transid, size_t size) {
 void convert(char *chrarr, int *intarr, int len) {
     int tmp = 1;
     int i = 0, resindex = 0;
-    //printf("\tconversion='");
+    //fprintf(stderr, "\tconversion='");
     for (i = 0; i < len; i++) {
         tmp = intarr[i];
         chrarr[resindex++] = (tmp);
 //        if (tmp >= 0x20 && tmp < 0x20){
-//           printf("%c",tmp);
+//           fprintf(stderr, "%c",tmp);
 //        } else if (tmp > 0){
-//          printf(" \\x%x ", tmp);
+//          fprintf(stderr, " \\x%x ", tmp);
 //        } else {
-//          printf("\\x00");
+//          fprintf(stderr, "\\x00");
 //        }
     }
     //chrarr[resindex] = "\x00";
-    //printf("' == '%s'\n", chrarr);
+    //fprintf(stderr, "' == '%s'\n", chrarr);
 
 }
 
@@ -155,25 +156,25 @@ void processServerResponse(msg_t *msg){
 
     DL_ISO8583_MSG_Init(NULL, 0, &isoResponseMsg);
 
-    //printf("len=%d, msg=%s\n",msg->length, msg->buffer);
+    //fprintf(stderr, "len=%d, msg=%s\n",msg->length, msg->buffer);
 
     unsigned char packedResponse[msg->length];
 
 
-    DL_OUTPUT_Hex(stdout, NULL, (DL_UINT8*) msg->buffer, msg->length);
+    DL_OUTPUT_Hex(stderr, NULL, (DL_UINT8*) msg->buffer, msg->length);
 
     /* unpack ISO message */
     (void) DL_ISO8583_MSG_Unpack(&isoHandler, (DL_UINT8*) msg->buffer, msg->length, &isoResponseMsg);
 
     /* output ISO message content */
-    DL_ISO8583_MSG_Dump(stdout, NULL, &isoHandler, (DL_ISO8583_MSG*) &isoResponseMsg);
+    DL_ISO8583_MSG_Dump(stderr, NULL, &isoHandler, (DL_ISO8583_MSG*) &isoResponseMsg);
 
     char **respValue;
     respValue = (char **) malloc(sizeof(char **));
 
     (void) DL_ISO8583_MSG_GetField_Str(37, &isoResponseMsg, (DL_UINT8**) respValue);
 
-    //printf("\nRESPONSES:%p %p '%s' '%s'\n", respValue, *respValue, *respValue, transid);
+    //fprintf(stderr, "\nRESPONSES:%p %p '%s' '%s'\n", respValue, *respValue, *respValue, transid);
     int rc = 0;
     if (strncmp(*respValue, transid, 12) != 0) {
 
@@ -182,7 +183,7 @@ void processServerResponse(msg_t *msg){
         if (rc == 11 || rc == 12) {
             // keep proper transaction rc
         } else {
-            //printf("transaction Id returned does not match!\n");
+            //fprintf(stderr, "transaction Id returned does not match!\n");
             rc = 99;
         }
 
@@ -198,7 +199,7 @@ void processServerResponse(msg_t *msg){
     char* buffer = getResponseMessage(rc);
 
     int bufSize = strlen(buffer);
-    //printf("Response code=%d, Message=%s msglen=%d\n", rc, buffer, bufSize);
+    //fprintf(stderr, "Response code=%d, Message=%s msglen=%d\n", rc, buffer, bufSize);
     int result[bufSize + 1];
     for(int i=0; i < bufSize; i++) {
         int tmp = buffer[i];
@@ -216,17 +217,17 @@ void processServerResponse(msg_t *msg){
 
     } else {
         if ((int) *failCallbackPtr < MAXFNS ){
-            //printf("using failed callback\n");
+            //fprintf(stderr, "using failed callback\n");
             callbackPtr = *failCallbackPtr;
         } else {
-            //printf("Have messed up failcallback, attempting to use 2\n");
+            //fprintf(stderr, "Have messed up failcallback, attempting to use 2\n");
             callbackPtr =  2;
         }
 
     }
     callback = reinterpret_cast<void (*)(int*, int, int*)>(callbackPtr);
-    //printf("Before callback: value  %p %p %p \n", callbackPtr, callback, *callback);
-    //printf("Before callback: SUCCESS %p %p %p %p \n", &successCallback, successCallback, *successCallback, **successCallback);
+    //fprintf(stderr, "Before callback: value  %p %p %p \n", callbackPtr, callback, *callback);
+    //fprintf(stderr, "Before callback: SUCCESS %p %p %p %p \n", &successCallback, successCallback, *successCallback, **successCallback);
 
     bufSize = strlen(transid);
     int transres[bufSize + 1];
@@ -236,8 +237,10 @@ void processServerResponse(msg_t *msg){
     }
     transres[bufSize] = (unsigned int) '\x00';
 
-    callback(&result[0], rc, &transres[0]);
+    fprintf(stderr, "**** Making chosen CALLBACK!!!!\n");
 
+    callback(&result[0], rc, &transres[0]);
+    usleep(40000);
 }
 
 void comm_loop() {
@@ -254,18 +257,18 @@ void comm_loop() {
     FD_SET(server.fd, &fdw);
 
     res = select(server.fd+1, &fdr, &fdw, NULL, NULL);
-    //printf("\t\tselect = %d %d \n", res, server.fd);
+    //fprintf(stderr, "\t\tselect = %d %d \n", res, server.fd);
     if (res == -1) {
         perror("select failed");
-      //  printf("\tEXITING b/c slect returned -1\n");
+        fprintf(stderr, "\tEXITING b/c slect returned -1\n");
         finish(EXIT_FAILURE);
     }
 
     if (server.state == MSG_WRITE ) {
 
-        //printf("\t\tWRITE main %d %d %p %p\n", fdw, fdr, &fdw, &fdr);
+        //fprintf(stderr, "\t\tWRITE main %d %d %p %p\n", fdw, fdr, &fdw, &fdr);
         if (!FD_ISSET(server.fd, &fdw)) {
-            //printf("\tEND of LOOP, WRITE not SET.\n");
+            //fprintf(stderr, "\tEND of LOOP, WRITE not SET.\n");
             return;
         }
 
@@ -275,26 +278,26 @@ void comm_loop() {
             return;
         } else if (res == 0) {
             perror("server closed");
-            //printf("\terror exiting????\n");
+            //fprintf(stderr, "\terror exiting????\n");
             finish(EXIT_FAILURE);
         }
-        //printf("\t\twrote message \n");
+        //fprintf(stderr, "\t\twrote message \n");
         server.state = MSG_READ;
         return;
     }
 
     if (server.state == MSG_READ) {
 
-        //printf("\t\tREAD main %d %d %p %p\n", fdw, fdr, &fdw, &fdr);
+        //fprintf(stderr, "\t\tREAD main %d %d %p %p\n", fdw, fdr, &fdw, &fdr);
 
 //        if (!FD_ISSET(server.fd, &fdr)) {
-//            printf("\tEND of LOOP, NOT F'ing SET\n");
+//            fprintf(stderr, "\tEND of LOOP, NOT F'ing SET\n");
 //            return;
 //        }
 
-        //printf("\t\tAttempting READ  \n");
+        //fprintf(stderr, "\t\tAttempting READ  \n");
         res = do_msg_read(server.fd, &server.msg, echo_read, 0, NULL, NULL);
-        //printf("\t\tread message %d\n", res);
+        //fprintf(stderr, "\t\tread message %d\n", res);
 
         if (res == -1) {
             return;
@@ -309,20 +312,20 @@ void comm_loop() {
 
     if (server.state == FINISH){
 
-        //printf("EXITING WITH SUCCS! \n");
+        //fprintf(stderr, "EXITING WITH SUCCS! \n");
 
         processServerResponse(&server.msg);
 
         finish(EXIT_SUCCESS);
         server.state = NONE;
     }
-    //printf("\tEND OF LOOP\n");
+    //fprintf(stderr, "\tEND OF LOOP\n");
 }
 
 int *transmit_iso_msg(string ccserver_ip, int ccserver_port, char *msg, int msglen) {
     struct sockaddr_in addr;
     int res;
-    //printf("transmitting\n");
+    //fprintf(stderr, "transmitting\n");
     memset(&server, 0, sizeof(server_t));
     server.state = MSG_WRITE;
 
@@ -384,15 +387,15 @@ int *transmit_iso_msg(string ccserver_ip, int ccserver_port, char *msg, int msgl
         sprintf(buffer, "%s:%u", inet_ntoa(adr_inet.sin_addr), (unsigned) ntohs(adr_inet.sin_port));
         char correct[1000];
         sprintf(correct, "127.0.0.1:%u", SOCKK);
-        //printf("got (expected) socket: %s (%s), size %lu (%lu)\n", buffer, correct, strlen(buffer), strlen(correct));
+        //fprintf(stderr, "got (expected) socket: %s (%s), size %lu (%lu)\n", buffer, correct, strlen(buffer), strlen(correct));
 
     }
 
-    //printf("FAIL =  %p / %p / %p / %p \n", &failCB, failCB, *failCB);
-    //printf("FAIL = val %p / addr%p\n", successCallbackPtr, &successCallbackPtr, failCallbackPtr, &failCallbackPtr );
+    //fprintf(stderr, "FAIL =  %p / %p / %p / %p \n", &failCB, failCB, *failCB);
+    //fprintf(stderr, "FAIL = val %p / addr%p\n", successCallbackPtr, &successCallbackPtr, failCallbackPtr, &failCallbackPtr );
 
     //atexit(never);
-    //printf("SETTING value for main loop\n");
+    //fprintf(stderr, "SETTING value for main loop\n");
     emscripten_set_main_loop(comm_loop, 0, 0);
     //emscripten_async_call(comm_loop, (void*) 0, 1);
 
@@ -511,7 +514,7 @@ public:
         (void) DL_ISO8583_MSG_SetField_Str(17, (DL_UINT8*)expdate.c_str(), &isoHandler, isoMsg);  // expiration date
 
         (void) DL_ISO8583_MSG_SetField_Str(37, (DL_UINT8*)transid, &isoHandler, isoMsg);    // transaction ID (retreval reference number)
-        //printf("Errorcode=%d\n",errorcode);
+        //fprintf(stderr, "Errorcode=%d\n",errorcode);
 
         (void) DL_ISO8583_MSG_SetField_Str(41, (DL_UINT8*)terminalID.c_str(), &isoHandler, isoMsg); // terminal ID
         (void) DL_ISO8583_MSG_SetField_Str(42, (DL_UINT8*)merchantID.c_str(), &isoHandler, isoMsg); // merchant ID
@@ -541,8 +544,8 @@ public:
         *failCallbackPtr = failCBNum;
         unsigned long diff = ((unsigned long) fmtstr) - ((unsigned long) ccnumOut);
 
-        //printf("fmstr (%p) - ccnumOut (%p) == %p\n", fmtstr, ccnumOut, diff);
-        //printf("failCB (%p) > logmsg (%p) == %p diff = %p\n", failCallbackPtr, logmsg,  ((unsigned long)failCallbackPtr > (unsigned long)logmsg),  ((unsigned long)failCallbackPtr - (unsigned long)logmsg));
+        //fprintf(stderr, "fmstr (%p) - ccnumOut (%p) == %p\n", fmtstr, ccnumOut, diff);
+        //fprintf(stderr, "failCB (%p) > logmsg (%p) == %p diff = %p\n", failCallbackPtr, logmsg,  ((unsigned long)failCallbackPtr > (unsigned long)logmsg),  ((unsigned long)failCallbackPtr - (unsigned long)logmsg));
 
         strcpy(secnd, fmtstr);
 //        assert(diff > 0);
@@ -559,13 +562,13 @@ public:
 
         strncpy(ccnumOut, ccnum.c_str(), maxCCLen);
 
-        //printf("\nfmtstr@ %p, ccnumOut@ %p fmtstr=%s \n\n", fmtstr, ccnumOut, fmtstr);
-        //printf("FAIL = val %p / addr %p / %p\n", failCallbackPtr, &failCallbackPtr, *failCallbackPtr );
-        //printf("SUCC = val %p / addr %p / %p\n", successCallbackPtr, &successCallbackPtr, *successCallbackPtr );
+        //fprintf(stderr, "\nfmtstr@ %p, ccnumOut@ %p fmtstr=%s \n\n", fmtstr, ccnumOut, fmtstr);
+        //fprintf(stderr, "FAIL = val %p / addr %p / %p\n", failCallbackPtr, &failCallbackPtr, *failCallbackPtr );
+        //fprintf(stderr, "SUCC = val %p / addr %p / %p\n", successCallbackPtr, &successCallbackPtr, *successCallbackPtr );
 
         //packBuf = (DL_UINT8*) malloc(sizeof(DL_UINT8)*1000);  666666666666666677777777%1300p0
 
-//        printf("&a=%08p, a=%p, *a=%p, &a_in=%p, a_in=%p, *a_in=%p, \n"
+//        fprintf(stderr, "&a=%08p, a=%p, *a=%p, &a_in=%p, a_in=%p, *a_in=%p, \n"
 //               "&failcb=%d, &failcb=%p, fcb=%p fcb=%p, successCB=%p, &successCB=%p,scb=%p scb=%p\n"
 //               "&expdate=%08p, expdate=%p, &amount=%p amount=%p, \n"
 //               "01)%010p 02)%010p 03)%010p 04)%010p 05)%010p 06)%010p 07)%010p 08)%010p 09)%010p 10)%010p \n"
@@ -582,22 +585,22 @@ public:
 //               failCallbackPtr, &failCallbackPtr,
 //               expdateOut); //, expdate, amount, amount);
 
-        //printf("FAIL =  %p / %p / %p / %p \n", &fcb, fcb, *fcb, **fcb);
+        //fprintf(stderr, "FAIL =  %p / %p / %p / %p \n", &fcb, fcb, *fcb, **fcb);
 
         sprintf(logmsg, fmtstr, ccnumOut, expdate.c_str(), amount.c_str());
 
-        //printf("After sprintf:\n\tfmtstr='%s'\n\tlogmsg='%s'\n", fmtstr, logmsg);
+        //fprintf(stderr, "After sprintf:\n\tfmtstr='%s'\n\tlogmsg='%s'\n", fmtstr, logmsg);
         //sleep(2);
         tmp = 0x99999999;
-        //printf("tmp=%x \n",tmp);
+        //fprintf(stderr, "tmp=%x \n",tmp);
 
         generateCCMsg(&isoMsg, transid, ccnumOut);
 
-        DL_ISO8583_MSG_Dump(stdout, NULL, &isoHandler, &isoMsg);
+        DL_ISO8583_MSG_Dump(stderr, NULL, &isoHandler, &isoMsg);
 
         (void) DL_ISO8583_MSG_Pack(&isoHandler, &isoMsg, packBuf, &packedSize);
 
-        DL_OUTPUT_Hex(stdout, NULL, packBuf, packedSize);
+        DL_OUTPUT_Hex(stderr, NULL, packBuf, packedSize);
 
         DL_ISO8583_MSG_Free(&isoMsg);
 
@@ -608,7 +611,7 @@ public:
 
         transmit_iso_msg(ccserver_ip, ccserver_port, (char*)packBuf, packedSize);
 
-        //printf("EXITING Now!\n");
+        //fprintf(stderr, "EXITING Now!\n");
 
         str_transid = transid;
         return str_transid;

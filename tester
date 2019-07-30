@@ -147,7 +147,7 @@ def run_interactions(ip_address, port, flag=SERVICE_CONF['initial_flag'], max_co
 			_LOG.info("STRESS TESTING (%d concurrent connections)", n)
 			_LOG.setLevel(max(logging.WARNING, old_level))
 			with concurrent.futures.ThreadPoolExecutor(max_workers=n) as pool:
-				results = pool.map(_run_interaction, (interaction_files*n)[:n])
+				results = pool.map(_run_interaction, ((interaction_files*n)[:n]))
 			try:
 				for _ in results:
 					pass
@@ -221,10 +221,10 @@ if __name__ == '__main__':
 			input()
 	elif arg == 'deploy':
 		registry = sys.argv[2]
-		tagcmd = "docker tag dc2019q:%s %s:5000/dc2019q-%s:latest" % (SERVICE_NAME.lower(), registry, SERVICE_NAME.lower())
+		tagcmd = "docker tag dc2019f-%s %s:5000/dc2019f-%s:latest" % (SERVICE_NAME.lower(), registry, SERVICE_NAME.lower())
 		print(tagcmd)
 		assert os.system(tagcmd) == 0
-		pushcmd = "docker push %s:5000/dc2019q-%s:latest" % (registry, SERVICE_NAME.lower())
+		pushcmd = "docker push %s:5000/dc2019f-%s:latest" % (registry, SERVICE_NAME.lower())
 		print(pushcmd)
 		assert os.system(pushcmd) == 0
 	else:

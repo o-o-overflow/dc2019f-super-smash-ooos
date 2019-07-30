@@ -15,6 +15,8 @@ COPY exploit*.py /
 
 COPY check*.py /
 
+COPY run_all_tests.py /
+
 RUN chmod 777 /*.py
 
 

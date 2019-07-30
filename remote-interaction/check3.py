@@ -27,7 +27,7 @@ def test_sqli_invalid_referrer():
 #
 #
 def make_contact(ccnum, expMM, expYY, referer_val="http://goforit.com/purchase.html"):
-    url = "http://{}:{}/cc?card-number={}&expiry-year={}&expiry-month={}".format(sys.argv[1], sys.argv[2], ccnum, expYY, expMM)
+    url = "http://{}:{}/cc/process.js?card-number={}&expiry-year={}&expiry-month={}".format(sys.argv[1], sys.argv[2], ccnum, expYY, expMM)
 
     cmd = ["wget", "-O", "-", "--header", "Referer: {}".format(referer_val), url]
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)

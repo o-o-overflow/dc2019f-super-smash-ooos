@@ -40,7 +40,7 @@ void DL_ISO8583_MSG_Init ( DL_UINT8       *_iStaticBuf,
 	/* set mode to 'static' if required */
 	if ( _iStaticBuf )
 	{
-	    printf("\nstatic buf is ON\n");
+	    fprintf(stderr, "\nstatic buf is ON\n");
 		ioMsg->sPtrNext = _iStaticBuf;
 		ioMsg->sPtrEnd  = (ioMsg->sPtrNext) + _iStaticBufSize;
 	}
@@ -88,12 +88,12 @@ DL_ERR DL_ISO8583_MSG_SetField_Str ( DL_UINT16       iField,
     const DL_ISO8583_FIELD_DEF *fieldPtr  = DL_ISO8583_GetFieldDef(iField,iHandler);
     DL_UINT16 maxLen = ((DL_UINT16 *) fieldPtr)[1];
     //DL_UINT16 varLen = (DL_UINT16) fieldPtr-->varLen;
-    //printf("field = %d, LENs= %d %d %d\n", iField, fieldPtr[0], fieldPtr[1], fieldPtr[2]);
+    //fprintf(stderr, "field = %d, LENs= %d %d %d\n", iField, fieldPtr[0], fieldPtr[1], fieldPtr[2]);
 
     if (len > maxLen){
         len = maxLen;
     }
-    //printf("\nhandler[2]=%d %d %d\n", iField, len, maxLen);
+    //fprintf(stderr, "\nhandler[2]=%d %d %d\n", iField, len, maxLen);
     //if (len > )
 	err = DL_ISO8583_MSG_SetField_Bin(iField,
 									  iDataStr,

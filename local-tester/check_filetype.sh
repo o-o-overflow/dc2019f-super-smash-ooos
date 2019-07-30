@@ -8,11 +8,12 @@ fi
 
 echo "[+] Testing wasm is still a WebAssembly file"
 #file $BASESRC/sendcc.wasm | grep -q "WebAssembly"
-hd /tmp/app/sendcc.wasm |head -10 > /tmp/app/sendcc.top
-hd ${BASESRC}/sendcc.wasm | head -10 > /tmp/app/mod_sendcc.top
+hd /tmp/app/includes/sendcc.wasm |head -10 > /tmp/app/sendcc.top
+hd ${BASESRC}/includes/sendcc.wasm | head -10 > /tmp/app/mod_sendcc.top
 
 if ! cmp -s /tmp/app/sendcc.top /tmp/app/mod_sendcc.top; then
-  exit 1
+   echo "FAIL, top of files do not match :("
+   exit 1
 fi
 rm /tmp/app/sendcc.top
 rm /tmp/app/mod_sendcc.top

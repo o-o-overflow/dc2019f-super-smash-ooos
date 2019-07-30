@@ -33,11 +33,11 @@ authors:
 # I'm not exposing the sendcc.js b/c they should be able to figure out that it's using the callbacks from
 # the source code in the wasm that adds the functions.
 public_files:
-  - service/src/sendcc.wasm
-  - service/src/server.js
+  - service/src/includes/sendcc.wasm
+  - service/src/cgi-bin/process.js
 
 patchable_files:
-  - /app/
+  - /app/includes/sendcc.wasm
 
 # Test scripts are heavily encouraged.
 # All scripts should exit 0 if nothing went wrong.

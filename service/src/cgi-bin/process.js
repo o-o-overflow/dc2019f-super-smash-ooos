@@ -1,17 +1,15 @@
+#!/usr/local/bin/node
 'use strict';
-var config = require("./config");
+var cgiHttpContext = require('cgi-node');
 
-global.queryData = [];
-global.binaryData = "";
+//cgiHttpContext.write("");
 
-const express = require('express');
+var config = require("config");
 
-const app = express();
-
-const wasm_launcher = "./sendcc.js";
+const wasm_launcher = "sendcc.js";
 
 function convertIntPtr(charPtr){
-    var convertedValue = ""
+    var convertedValue = "";
     for (let pointer = 0; pointer < 20; pointer++) {
 
         var tmp2 = Module.HEAPU32[charPtr / Uint32Array.BYTES_PER_ELEMENT  + pointer];
@@ -25,8 +23,8 @@ function convertIntPtr(charPtr){
     return convertedValue;
 }
 
-function processRequest(req, resp, next){
-    var Module = require(wasm_launcher);
+function processRequest(req, resp){
+    let Module = require(wasm_launcher);
     global.Module = Module;
     Module['onRuntimeInitialized'] = onRuntimeInitialized;
     var transactionId = "";
@@ -39,9 +37,9 @@ function processRequest(req, resp, next){
         } else {
             resp.redirect("/purchase.html?message=Authorized id did not match sent id")
         }
-
         delete require.cache[require.resolve(wasm_launcher)];
-        next();
+        global.Module = null;
+
     }
 
     function failCB(ptrRespMessage, responseCode, responseTransId ) {
@@ -58,13 +56,13 @@ function processRequest(req, resp, next){
                 break;
             }
         }
-
         var body = "\nresponse=" +responseCode+ "," + responseMessage + "\n";
 
         resp.redirect("/purchase.html?message=" + responseMessage + " please re-enter the information.");
 
         delete require.cache[require.resolve(wasm_launcher)];
-        next();
+
+        global.Module = null;
 
     }
 
@@ -93,38 +91,7 @@ function processRequest(req, resp, next){
 
 }
 
-function errorHandler(err, req, res, next) {
-    if (res.headersSent) {
-        return next(err)
-    }
-    delete require.cache[require.resolve(wasm_launcher)];
+processRequest(cgiHttpContext.request, cgiHttpContext.response);
 
-    if (err.message !== undefined && err.stack !== undefined) {
-        res.status(500);
-        var errmsg = err.message
-        if (err.stack.search("at run ") > -1 && err.message.search("Cannot read property 'apply' of undefined") > -1) {
-            errmsg = "_compute_otp is undefined and cannot be applied";
-        }
-    }
+//app.get('/cc', processRequest);
 
-    var outs = "<!DOCTYPE html>\n" +
-        "<html lang=\"en\">\n" +
-        "<head>\n" +
-        "<meta charset=\"utf-8\">\n" +
-        "<title>Error</title>\n" +
-        "</head>\n" +
-        "<body>\n" +
-        "<pre>" + errmsg + "\n" + "</pre>\n</body>\n</html>\n";
-
-    res.send(outs)
-
-
-}
-
-app.listen(config.server.port, config.server.host, function () {
-   console.log("App listening on " + config.server.host + ":" + config.server.port );
-});
-
-app.get('/cc', processRequest);
-
-app.use(errorHandler);
