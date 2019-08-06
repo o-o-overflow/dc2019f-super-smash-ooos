@@ -58,6 +58,7 @@ def run_all():
         print(ex)
         traceback.print_exc()
         print("Error while processing " + current_fn)
+        exit(99)
     finally:
         pass
         # if exists("/tmp/server_stdout.log"):
