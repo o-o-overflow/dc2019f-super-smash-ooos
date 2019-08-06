@@ -7,6 +7,8 @@ tags:
   - web
 violates_flag_format: false # if this is not "true", the flag is verfied against the flag format
 
+game_port: 8888
+
 # At some point we may start blocking all egress connections. Set this to True if your service needs them. DO NOT RELY ON THIS FOR BLOCKING THOUGH.
 allow_egress: False
 
