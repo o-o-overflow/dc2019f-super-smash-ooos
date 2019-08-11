@@ -41,7 +41,7 @@ public_files:
 #the patchable object is limited to a single file.
 patchable_file: /app/includes/sendcc.wasm
 # The maximum difference in bytes between the original binary and the patch, if not supplied assumed to be 200 bytes
-max_patchable_bytes: 183
+max_patchable_bytes: 8
 
 # Test scripts are heavily encouraged.
 # All scripts should exit 0 if nothing went wrong.
