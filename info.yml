@@ -36,6 +36,7 @@ authors:
 # the source code in the wasm that adds the functions.
 public_files:
   - service/src/includes/sendcc.wasm
+  - service/src/includes/sendcc.js
   - service/src/cgi-bin/process.js
 
 #the patchable object is limited to a single file.
