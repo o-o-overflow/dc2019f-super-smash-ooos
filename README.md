@@ -17,6 +17,7 @@ The enviornment all runs in a single docker container but the back-end and cc-pr
 
 ## Vulnerability 1
 The first vulnerability uses a buffer overflow in a heap value to overwrite the error callback with pointer for the success callback. The first step was to find a buffer overflow in the `CCInfo.checkout()` method, which is called from `process.js`. In `checkout()`, a variable is initialized to 18 bytes, but the length supplied by the iso8583 api uses an incorrect value of 32 bytes. The overflow, just happens, to overwrite the format string used for sprintf'ing a value to create a log message. Leveraging the format string, an attacker can overflow the log message and change the error callback pointer to the same value as the success callback pointer.  
+```
 		[CC Processing Error Callback pointer = 2]
 		[CC Processing Success Callback pointer = 1]
 		[ISO Message -- 1024 buffer ]
@@ -24,7 +25,17 @@ The first vulnerability uses a buffer overflow in a heap value to overwrite the 
 		[Format String Literal ]
 		[CC NUM [with partial overwrite of format string ]]
 		[ Other CC info …]
-		
+```
+Which were allocated onto the heap using:
+``` 
+        ccnumOut = (char *) malloc(18 * sizeof(char));
+        fmtstr = (char *) malloc(14 * sizeof(char));
+        logmsg = (char *) malloc(0x100);
+        packBuf = (DL_UINT8 *) malloc(0x400 * sizeof(char));
+        successCallbackPtr = (int*) malloc (sizeof(int*));
+        failCallbackPtr = (int*) malloc (sizeof(int*));
+```
+
 With the error callback pointer overwritten, once the CC-processor returns an error, the wasm still calls the success function, which allows the attacker to receive the flag.
 
 #Patch 1
