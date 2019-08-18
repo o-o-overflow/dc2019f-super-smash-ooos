@@ -18,37 +18,37 @@ The enviornment all runs in a single docker container but the back-end and cc-pr
 ## Vulnerability 1
 The first vulnerability uses a buffer overflow in a heap value to overwrite the error callback with pointer for the success callback. The first step was to find a buffer overflow in the `CCInfo.checkout()` method, which is called from `process.js`. In `checkout()`, a variable is initialized to 18 bytes, but the length supplied by the iso8583 api uses an incorrect value of 32 bytes. The overflow, just happens, to overwrite the format string used for sprintf'ing a value to create a log message. Leveraging the format string, an attacker can overflow the log message and change the error callback pointer to the same value as the success callback pointer.  
 ```
-		[CC Processing Error Callback pointer = 2]
-		[CC Processing Success Callback pointer = 1]
-		[ISO Message -- 1024 buffer ]
-		[Log Message -- 256 bytes]
-		[Format String Literal ]
-		[CC NUM [with partial overwrite of format string ]]
-		[ Other CC info …]
+    [CC Processing Error Callback pointer = 2]
+    [CC Processing Success Callback pointer = 1]
+    [ISO Message -- 1024 buffer ]
+    [Log Message -- 256 bytes]
+    [Format String Literal ]
+    [CC NUM [with partial overwrite of format string ]]
+    [ Other CC info …]
 ```
-Which were allocated onto the heap using:
+Which were allocated onto the heap using to the following in `checkout()`:
 ``` 
-        ccnumOut = (char *) malloc(18 * sizeof(char));
-        fmtstr = (char *) malloc(14 * sizeof(char));
-        logmsg = (char *) malloc(0x100);
-        packBuf = (DL_UINT8 *) malloc(0x400 * sizeof(char));
-        successCallbackPtr = (int*) malloc (sizeof(int*));
-        failCallbackPtr = (int*) malloc (sizeof(int*));
+    ccnumOut = (char *) malloc(18 * sizeof(char));
+    fmtstr = (char *) malloc(14 * sizeof(char));
+    logmsg = (char *) malloc(0x100);
+    packBuf = (DL_UINT8 *) malloc(0x400 * sizeof(char));
+    successCallbackPtr = (int*) malloc (sizeof(int*));
+    failCallbackPtr = (int*) malloc (sizeof(int*));
 ```
 
 With the error callback pointer overwritten, once the CC-processor returns an error, the wasm still calls the success function, which allows the attacker to receive the flag.
 
-#Patch 1
+## Patch 1
 The buffer overflow vulnerability can be patched by changing the value in the iso8583 api field to 18.
 
-##Vulnerability 2
+## Vulnerability 2
 The second vulnerability was along a different path, the referrer header value, and was designed to be more subtle than the first vulnerability. Searching for the error messages provided trough the interface in the wasm, the attacker could discover a table of error messages used by the wasm to commicate the CC-processing error. Several of the error messages contained references to different tables used by the CC-processor. If the attacker injected a `'` into the referrer the resulting error message was different than the rest indicating "major error".  Using the information provided in the error messages, it is further possible to determine a table existed called `accounts` and it at least had a `pan, balance, and credit_limit` fields. However, creating an insert with a valid CC number (valid bin and check digit) and using the sql injection to add it to the accounts table it was possible to create your own credit card to charge.
 
-#Patch 2
+## Patch 2
 The sql vulnerability can be patched by altering a regex that attempted to replace http with https to remove any `'` found in the referrer.  
 For an example of the patch see the bin diff between `patches/sql_safe_sendcc.wasm.accepted` and `patches/sendcc.wasm.accepted`.
 
-#Exploits
+## Exploits
 Example exploits for both vulnerabilities are available in the `remote-interaction/` folder.
  
 
